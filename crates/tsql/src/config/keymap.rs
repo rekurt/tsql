@@ -406,9 +406,11 @@ impl std::fmt::Display for KeyBinding {
         };
 
         // Build the final string
-        let mut result_parts: Vec<String> = parts.iter().map(|s| s.to_string()).collect();
-        result_parts.push(key);
-        write!(f, "{}", result_parts.join("+"))
+        if parts.is_empty() {
+            write!(f, "{}", key)
+        } else {
+            write!(f, "{}+{}", parts.join("+"), key)
+        }
     }
 }
 
