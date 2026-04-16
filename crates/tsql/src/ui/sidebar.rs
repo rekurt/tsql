@@ -255,7 +255,7 @@ impl Sidebar {
             return;
         }
         if let Some(selected) = self.connections_state.selected() {
-            let new_selected = (selected + amount).min(total_count - 1);
+            let new_selected = selected.saturating_add(amount).min(total_count - 1);
             self.connections_state.select(Some(new_selected));
             self.selected_connection = Some(new_selected);
         } else {

@@ -3,9 +3,8 @@
 use serde::{Deserialize, Serialize};
 
 /// Root configuration structure
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
-#[derive(Default)]
 pub struct Config {
     /// Display settings
     pub display: DisplayConfig,
