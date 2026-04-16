@@ -9445,6 +9445,32 @@ mod tests {
         }
     }
 
+    /// Create a minimal test App instance with isolated config directory.
+    /// Returns the guard (must be held alive for the test) and the App.
+    fn new_test_app() -> (ConfigDirGuard, App) {
+        let guard = ConfigDirGuard::new();
+        let (tx, rx) = mpsc::unbounded_channel();
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+
+        let mut app = App::with_config(
+            GridModel::empty(),
+            rt.handle().clone(),
+            tx,
+            rx,
+            None,
+            Config::default(),
+        );
+
+        // Clear any startup modals
+        app.connection_manager = None;
+        app.connection_picker = None;
+
+        (guard, app)
+    }
+
     // ========== Grid Mouse Tests ==========
 
     #[test]
@@ -12225,24 +12251,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_l_from_sidebar_connections_moves_to_query() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Sidebar(SidebarSection::Connections);
         app.sidebar_focus = SidebarSection::Connections;
@@ -12262,21 +12271,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_l_from_sidebar_schema_moves_to_grid() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
+        let (_guard, mut app) = new_test_app();
 
         app.connection_manager = None;
         app.connection_picker = None;
@@ -12299,24 +12294,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_j_within_sidebar_moves_to_schema() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Sidebar(SidebarSection::Connections);
         app.sidebar_focus = SidebarSection::Connections;
@@ -12341,24 +12319,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_k_within_sidebar_moves_to_connections() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Sidebar(SidebarSection::Schema);
         app.sidebar_focus = SidebarSection::Schema;
@@ -12378,24 +12339,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_hjkl_noop_in_insert_mode() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Query;
         app.sidebar_visible = true;
@@ -12450,24 +12394,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_boundary_noop_ctrl_j_from_grid() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Grid;
         app.mode = Mode::Normal;

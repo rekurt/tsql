@@ -275,8 +275,8 @@ impl ConnectionEntry {
 
         let mut url = "postgres://".to_string();
 
-        // Add user
-        url.push_str(&self.user);
+        // Add user (URL-encode to handle special characters like @)
+        url.push_str(&urlencoding::encode(&self.user));
 
         // Add password if provided
         if let Some(pwd) = password {
@@ -292,9 +292,9 @@ impl ConnectionEntry {
             url.push_str(&self.port.to_string());
         }
 
-        // Add database
+        // Add database (URL-encode to handle special characters like spaces)
         url.push('/');
-        url.push_str(&self.database);
+        url.push_str(&urlencoding::encode(&self.database));
 
         if let Some(mode) = self.ssl_mode {
             url.push_str("?sslmode=");
