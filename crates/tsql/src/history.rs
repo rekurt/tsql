@@ -1,6 +1,7 @@
 //! Query history management with JSON persistence and fuzzy search.
 
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
@@ -10,6 +11,7 @@ use nucleo_matcher::{
     Config, Matcher, Utf32Str,
 };
 use serde::{Deserialize, Serialize};
+use tempfile::NamedTempFile;
 
 use crate::config::history_path;
 
@@ -126,16 +128,20 @@ impl History {
     }
 
     /// Save history to disk.
+    /// Uses atomic write (temp file + rename) to prevent corruption on crash.
     pub fn save(&mut self) -> Result<()> {
         if !self.dirty || self.path.as_os_str().is_empty() {
             return Ok(());
         }
 
+        let parent = self
+            .path
+            .parent()
+            .context("History path has no parent directory")?;
+
         // Ensure parent directory exists.
-        if let Some(parent) = self.path.parent() {
-            fs::create_dir_all(parent)
-                .with_context(|| format!("Failed to create directory: {}", parent.display()))?;
-        }
+        fs::create_dir_all(parent)
+            .with_context(|| format!("Failed to create directory: {}", parent.display()))?;
 
         let file = HistoryFile {
             version: 1,
@@ -144,8 +150,27 @@ impl History {
 
         let content = serde_json::to_string_pretty(&file).context("Failed to serialize history")?;
 
-        fs::write(&self.path, content)
-            .with_context(|| format!("Failed to write history file: {}", self.path.display()))?;
+        // Atomic write: temp file in same directory + rename.
+        let mut tmp = NamedTempFile::new_in(parent).with_context(|| {
+            format!(
+                "Failed to create temp history file in: {}",
+                parent.display()
+            )
+        })?;
+
+        tmp.write_all(content.as_bytes())
+            .context("Failed to write temp history file")?;
+        tmp.flush().context("Failed to flush temp history file")?;
+
+        tmp.persist(&self.path)
+            .map_err(|e| anyhow::anyhow!("Failed to persist history file: {}", e))?;
+
+        // Set restrictive permissions on Unix (history may contain sensitive queries).
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let _ = fs::set_permissions(&self.path, fs::Permissions::from_mode(0o600));
+        }
 
         self.dirty = false;
         Ok(())

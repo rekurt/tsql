@@ -1348,9 +1348,11 @@ pub fn quote_identifier(s: &str) -> String {
 }
 
 /// Escape a SQL value for use in a statement.
+/// Note: empty string is treated as an empty string literal (''), not NULL.
+/// Only the literal text "null" (case-insensitive) maps to SQL NULL.
 pub fn escape_sql_value(s: &str) -> String {
-    // Handle NULL
-    if s.is_empty() || s.eq_ignore_ascii_case("null") {
+    // Handle NULL (only explicit "null" text, not empty strings)
+    if s.eq_ignore_ascii_case("null") {
         return "NULL".to_string();
     }
 
@@ -2467,12 +2469,30 @@ mod tests {
     fn test_generate_sql_handles_null() {
         let model = GridModel::new(
             vec!["id".to_string(), "optional".to_string()],
+            vec![vec!["1".to_string(), "null".to_string()]],
+        );
+
+        let sql = model.generate_insert_sql("items", &[0]);
+
+        assert!(
+            sql.contains("NULL"),
+            "Explicit 'null' text should become SQL NULL"
+        );
+    }
+
+    #[test]
+    fn test_generate_sql_handles_empty_string() {
+        let model = GridModel::new(
+            vec!["id".to_string(), "name".to_string()],
             vec![vec!["1".to_string(), "".to_string()]],
         );
 
         let sql = model.generate_insert_sql("items", &[0]);
 
-        assert!(sql.contains("NULL"), "Empty string should become NULL");
+        assert!(
+            sql.contains("''"),
+            "Empty string should become empty string literal, not NULL"
+        );
     }
 
     #[test]
