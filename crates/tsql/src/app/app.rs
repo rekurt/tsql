@@ -11804,25 +11804,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_h_from_query_moves_to_sidebar_connections() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        // Close auto-opened pickers
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Query;
         app.sidebar_visible = true;
@@ -11846,24 +11828,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_h_from_grid_moves_to_sidebar_schema() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Grid;
         app.sidebar_visible = true;
@@ -11882,24 +11847,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_h_noop_when_sidebar_hidden() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Query;
         app.sidebar_visible = false;
@@ -11918,24 +11866,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_shift_b_opens_sidebar_and_focuses_schema() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         // Seed schema cache so focus_schema can select an item without requiring a render pass.
         app.schema_cache.tables = vec![
@@ -11992,24 +11923,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_c_does_not_open_connection_manager_from_query() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
         app.focus = Focus::Query;
         app.mode = Mode::Normal;
         app.db.running = false;
@@ -12025,24 +11939,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_c_does_not_open_connection_manager_from_grid() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
         app.focus = Focus::Grid;
         app.mode = Mode::Normal;
         app.db.running = false;
@@ -12058,24 +11955,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_backslash_toggles_sidebar_when_sidebar_schema_focused() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.sidebar_visible = true;
         app.focus = Focus::Sidebar(SidebarSection::Schema);
@@ -12099,24 +11979,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_backslash_toggles_sidebar_when_sidebar_connections_focused() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.sidebar_visible = true;
         app.focus = Focus::Sidebar(SidebarSection::Connections);
@@ -12140,24 +12003,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_4_toggles_sidebar_when_sidebar_schema_focused() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.sidebar_visible = true;
         app.focus = Focus::Sidebar(SidebarSection::Schema);
@@ -12181,24 +12027,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_j_from_query_moves_to_grid() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Query;
         app.mode = Mode::Normal;
@@ -12216,24 +12045,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_k_from_grid_moves_to_query() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Grid;
         app.mode = Mode::Normal;
@@ -12358,24 +12170,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_boundary_noop_ctrl_k_from_query() {
-        let _guard = ConfigDirGuard::new();
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::with_config(
-            GridModel::empty(),
-            rt.handle().clone(),
-            tx,
-            rx,
-            None,
-            Config::default(),
-        );
-
-        app.connection_manager = None;
-        app.connection_picker = None;
+        let (_guard, mut app) = new_test_app();
 
         app.focus = Focus::Query;
         app.mode = Mode::Normal;
