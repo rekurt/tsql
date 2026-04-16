@@ -11114,14 +11114,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_pressing_a_after_saving_connection_opens_new_form() {
-        let _guard = ConfigDirGuard::new(); // Isolate config to temp directory
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::new(GridModel::empty(), rt.handle().clone(), tx, rx, None);
+        let (_guard, mut app) = new_test_app();
 
         // Clear any existing connections and pickers to set up clean state
         app.connections = ConnectionsFile::new();
@@ -11201,14 +11194,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_ctrl_s_works_first_press_when_editing_connection() {
-        let _guard = ConfigDirGuard::new(); // Isolate config to temp directory
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::new(GridModel::empty(), rt.handle().clone(), tx, rx, None);
+        let (_guard, mut app) = new_test_app();
 
         // Clear any pickers
         app.connection_picker = None;
@@ -11269,14 +11255,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_esc_closes_connection_manager_single_press() {
-        let _guard = ConfigDirGuard::new(); // Isolate config to temp directory
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::new(GridModel::empty(), rt.handle().clone(), tx, rx, None);
+        let (_guard, mut app) = new_test_app();
 
         // Clear any existing state and explicitly open the manager
         app.connection_picker = None;
@@ -11301,14 +11280,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_esc_on_modified_form_shows_confirmation() {
-        let _guard = ConfigDirGuard::new(); // Isolate config to temp directory
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::new(GridModel::empty(), rt.handle().clone(), tx, rx, None);
+        let (_guard, mut app) = new_test_app();
 
         // Clear any existing state and open the manager
         app.connection_picker = None;
@@ -11525,14 +11497,7 @@ mod tests {
     #[test]
     #[serial]
     fn test_esc_on_unmodified_form_closes_immediately() {
-        let _guard = ConfigDirGuard::new(); // Isolate config to temp directory
-        let (tx, rx) = mpsc::unbounded_channel();
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-
-        let mut app = App::new(GridModel::empty(), rt.handle().clone(), tx, rx, None);
+        let (_guard, mut app) = new_test_app();
 
         // Clear any existing state and open the manager
         app.connection_picker = None;
