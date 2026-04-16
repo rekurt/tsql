@@ -53,8 +53,7 @@ pub struct JsonEditorModal<'a> {
     column_name: String,
     /// Column data type (e.g., "jsonb", "text")
     column_type: String,
-    /// Original value for cancel (kept for potential future "revert" feature)
-    #[allow(dead_code)]
+    /// Original value for detecting modifications via `is_modified()`.
     original_value: String,
     /// Row index in the grid
     row: usize,
